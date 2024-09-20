@@ -4,8 +4,6 @@
   "main": "App.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",  // Replace with the correct entry point for your app
-    "build": "react-scripts build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
