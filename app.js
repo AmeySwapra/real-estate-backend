@@ -12,6 +12,7 @@ console.log("testing the server in good enviroment")
 
 const corsOptions = {
   origin: 'https://justhomes.netlify.app',
+  credentials: true,
   optionsSuccessStatus: 200
 };
 
