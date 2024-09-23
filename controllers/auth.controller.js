@@ -50,7 +50,7 @@ export const login = async (req, res) => {
 
          if(!isPassword) return res.status(401).json({message : "Invalid credentials"});
 
-         /* Generate the cookie token and send to user*/
+         /* Generate the cookie token and send to user have the max life of 7 days*/
          const age = 1000 * 60 * 60 * 24 * 7
 
          const {password : userPassword, ...userInfo} = user;
@@ -83,39 +83,41 @@ export const logout =(req, res) => {
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const googleLogin = async (req, res) => {
-    const { token } = req.body;
-  
-    try {
-      const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: process.env.GOOGLE_CLIENT_ID,
+  const { token } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const { email, name } = ticket.getPayload();
+    
+    let user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      user = await prisma.user.create({
+        data: {
+          username: name,
+          email,
+        },
       });
-  
-      const { email, name } = ticket.getPayload();
-      
-      let user = await prisma.user.findUnique({
-        where: { email },
-      });
-  
-      if (!user) {
-        user = await prisma.user.create({
-          data: {
-            username: name,
-            email,
-          },
-        });
-      }
-  
-      const jwtToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: '3d',
-      });
-  
-      res
-        .cookie('jwt', jwtToken, { httpOnly: true, secure: true, maxAge: 3 * 24 * 60 * 60 * 1000 })
-        .status(200)
-        .json({ message: 'Google Login Successful', username: user.username });
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({ message: 'Google login failed' });
     }
-  };
+
+    const jwtToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+      expiresIn: '3d',
+    });
+
+    res
+      .cookie('jwt', jwtToken, { httpOnly: true, secure: true, maxAge: 3 * 24 * 60 * 60 * 1000 })
+      .status(200)
+      .json({ message: 'Google Login Successful', username: user.username });
+  } catch (error) {
+    console.error("Google login error:", error);
+    res.status(500).json({ message: 'Google login failed' });
+  }
+};
+
+
