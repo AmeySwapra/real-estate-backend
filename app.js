@@ -11,7 +11,7 @@ const app = express();
 console.log("Testing the server in a good environment");
 
 const corsOptions = {
-  origin: ['https://justhomes.netlify.app', 'http://localhost:3000'], 
+  origin: ['https://justhomes.netlify.app', 'http://localhost:3000', 'http://localhost:3001'], 
   credentials: true,
   optionsSuccessStatus: 200,
 };
