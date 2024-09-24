@@ -1,5 +1,4 @@
-import prisma from "../lib/prisma";
-
+import prisma from "../lib/prisma.js"; 
 
 export const postMessage = async (req, res) => {
     const { name, email, message } = req.body;
@@ -13,9 +12,9 @@ export const postMessage = async (req, res) => {
       console.error(error);
       res.status(500).json({ message: 'Error sending message' });
     }
-  }
+};
 
-  export const getMessage = async (req, res) => {
+export const getMessage = async (req, res) => {
     try {
       const messages = await prisma.message.findMany();
       res.json(messages);
@@ -23,4 +22,4 @@ export const postMessage = async (req, res) => {
       console.error(error);
       res.status(500).json({ message: 'Error fetching messages' });
     }
-  }
+};
