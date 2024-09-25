@@ -82,42 +82,68 @@ export const logout =(req, res) => {
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-export const googleLogin = async (req, res) => {
+export const googleLogin =   async (req, res) => {
   const { token } = req.body;
 
+  if (!token) {
+    return res.status(400).json({ message: 'Access token is missing' });
+  }
+
   try {
+    // Step 1: Verify the ID token using the OAuth2Client
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: process.env.GOOGLE_CLIENT_ID, // Ensure this matches your Google Client ID
     });
 
-    const { email, name } = ticket.getPayload();
-    
+    const payload = ticket.getPayload(); // Contains user info, e.g., email, name
+    const { email, name, picture } = payload;
+
+    // Step 2: Check if the user exists in your database
     let user = await prisma.user.findUnique({
-      where: { email },
+      where: {
+        email: email,
+      },
     });
 
+    // Step 3: If the user doesn't exist, create a new user in the database
     if (!user) {
       user = await prisma.user.create({
         data: {
           username: name,
-          email,
+          email: email,
+          avatar: picture,
         },
       });
     }
 
-    const jwtToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '3d',
+    // Step 4: Respond with user info
+    return res.status(200).json({
+      message: 'Google login successful',
+      username: user.username,
+      email: user.email,
+      avatar: user.avatar,
     });
 
-    res
-      .cookie('jwt', jwtToken, { httpOnly: true, secure: true, maxAge: 3 * 24 * 60 * 60 * 1000 })
-      .status(200)
-      .json({ message: 'Google Login Successful', username: user.username });
   } catch (error) {
-    console.error("Google login error:", error);
-    res.status(500).json({ message: 'Google login failed' });
+    console.error('Error during Google login:', error.response?.data || error.message);
+
+    return res.status(500).json({
+      message: 'Google login failed',
+      error: error.response?.data || error.message,
+    });
   }
 };
 
+
+
+export const getRegiterUser = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany();
+    res.json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching user' });
+  }
+};
 

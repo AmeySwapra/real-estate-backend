@@ -12,6 +12,7 @@ console.log("Testing the server in a good environment");
 
 const corsOptions = {
   origin: ['https://justhomes.netlify.app', 'http://localhost:3000', 'http://localhost:3001', 'https://justhome-adminpanel.netlify.app'], 
+  methods: ['GET', 'POST'], 
   credentials: true,
   optionsSuccessStatus: 200,
 };
