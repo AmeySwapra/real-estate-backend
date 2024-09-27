@@ -37,3 +37,39 @@ export const getServices = async (req, res) => {
         console.log(error)
     }
 }
+
+
+export const editService = async (req, res) => {
+    const { id } = req.params;
+    const { name, description, image } = req.body;
+
+    try {
+        const updateService  = await prisma.service.update({
+            where: {id : id},
+            data : {
+               name,
+               description,
+               image
+            },
+        });
+        res.status(200).json(updateService)
+    } catch (error) {
+        res.status(500).json({error : error.message})
+    }
+}
+
+
+export const dropService = async (req, res) => {
+
+    const { id } = req.params;
+
+    try {
+         await prisma.service.delete({
+            where : {id : id}
+        });
+
+        res.status(204).send()
+    } catch (error) {
+        res.status(500).json({error : error.message})
+    }
+}
