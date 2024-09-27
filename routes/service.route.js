@@ -6,8 +6,8 @@ const router = express();
 
 router.post("/post-service", postService);
 router.get("/get-service", getServices);
-router.put("/edit-service", editService);
-router.delete("/delete-service", dropService)
+router.put("/edit-service/:id", editService);
+router.delete("/delete-service/:id", dropService)
 
 
 export default router;
