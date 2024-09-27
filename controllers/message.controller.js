@@ -9,7 +9,7 @@ export const postMessage = async (req, res) => {
     }
   
     try {
-      // Create a new message record in the database
+    
       const newMessage = await prisma.message.create({
         data: {
           name,

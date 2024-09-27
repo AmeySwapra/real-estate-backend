@@ -6,6 +6,7 @@ import testRoute from './routes/test.route.js';
 import postRoute from './routes/post.route.js';
 import userRoute from './routes/user.route.js';
 import messageRoute from './routes/message.route.js'
+import serviceRoute from './routes/service.route.js'
 const app = express();
 
 console.log("Testing the server in a good environment");
@@ -29,6 +30,7 @@ app.use('/api/test', testRoute);
 app.use('/api/posts', postRoute);
 app.use('/api/users', userRoute);
 app.use('/api/messages', messageRoute);
+app.use('api/services', serviceRoute)
 
 
 app.listen(8080, () => {
