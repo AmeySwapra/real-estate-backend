@@ -30,7 +30,7 @@ app.use('/api/test', testRoute);
 app.use('/api/posts', postRoute);
 app.use('/api/users', userRoute);
 app.use('/api/messages', messageRoute);
-app.use('api/services', serviceRoute)
+app.use('/api/services', serviceRoute)
 
 
 app.listen(8080, () => {
